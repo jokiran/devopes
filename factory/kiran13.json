@@ -1,0 +1,9 @@
+{
+	"name": "kiran13",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ced75bee-0202-4080-950e-a363449394e1",
+		"tenantId": "e786ce73-306e-45ab-b69f-ee6870578121"
+	}
+}

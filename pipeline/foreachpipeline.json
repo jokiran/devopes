@@ -1,0 +1,113 @@
+{
+	"name": "foreachpipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('metadata')",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "sourceforeach",
+									"type": "DatasetReference",
+									"parameters": {
+										"inputsource": {
+											"value": "@item().Inputfile",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "sinksqlforeach",
+									"type": "DatasetReference",
+									"parameters": {
+										"sqltablename": {
+											"value": "@item().Outputtablename",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"metadata": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"Inputfile": "upsert_data.csv",
+						"Outputtablename": "upsert_dataout"
+					},
+					{
+						"Inputfile": "Start_date.csv",
+						"Outputtablename": "Start_dateout"
+					},
+					{
+						"Inputfile": "Sample_data.csv",
+						"Outputtablename": "Sample_dataout"
+					},
+					{
+						"Inputfile": "Department.csv",
+						"Outputtablename": "Departmentout"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-07-15T11:52:10Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
