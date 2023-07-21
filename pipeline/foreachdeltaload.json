@@ -28,6 +28,108 @@
 				}
 			},
 			{
+				"name": "ForEach2",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data2",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "upsert",
+									"upsertSettings": {
+										"useTempDB": true,
+										"keys": {
+											"value": "@array(item().keycolumn)",
+											"type": "Expression"
+										}
+									},
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "deltaforeachcopydatasink",
+									"type": "DatasetReference",
+									"parameters": {
+										"path": {
+											"value": "@item().lakepath",
+											"type": "Expression"
+										},
+										"tablename": {
+											"value": "@item().laketablename",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSqlTable2",
+									"type": "DatasetReference",
+									"parameters": {
+										"tablename": {
+											"value": "@item().sqltable",
+											"type": "Expression"
+										},
+										"schema": {
+											"value": "@item().sqlschema",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
 				"name": "ForEach1",
 				"type": "ForEach",
 				"dependsOn": [
@@ -188,108 +290,6 @@
 								"referenceName": "AzureSqlDatabase2",
 								"type": "LinkedServiceReference"
 							}
-						}
-					]
-				}
-			},
-			{
-				"name": "ForEach2",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "ForEach1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Lookup1').output.value",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "Copy data2",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "DelimitedTextSource",
-									"storeSettings": {
-										"type": "AzureBlobFSReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
-									}
-								},
-								"sink": {
-									"type": "AzureSqlSink",
-									"writeBehavior": "upsert",
-									"upsertSettings": {
-										"useTempDB": true,
-										"keys": {
-											"value": "@array(item().keycolumn)",
-											"type": "Expression"
-										}
-									},
-									"sqlWriterUseTableLock": false,
-									"tableOption": "autoCreate",
-									"disableMetricsCollection": false
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "deltaforeachcopydatasink",
-									"type": "DatasetReference",
-									"parameters": {
-										"path": {
-											"value": "@item().lakepath",
-											"type": "Expression"
-										},
-										"tablename": {
-											"value": "@item().laketablename",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "AzureSqlTable2",
-									"type": "DatasetReference",
-									"parameters": {
-										"tablename": {
-											"value": "@item().sqltable",
-											"type": "Expression"
-										},
-										"schema": {
-											"value": "@item().sqlschema",
-											"type": "Expression"
-										}
-									}
-								}
-							]
 						}
 					]
 				}
